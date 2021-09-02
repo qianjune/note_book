@@ -1,4 +1,4 @@
-## observable create
+## [observable create](https://juejin.cn/post/6921473823543918600#heading-4)
 
 ```typescript
 // 返回一个指向一个Proxy的变量
@@ -193,10 +193,118 @@ export function observe (fn, options = {}) {
 > >   const runningReaction = reactionStack[reactionStack.length - 1]
 > >   if (runningReaction) {
 > >     debugOperation(runningReaction, operation)
+> > // 为当前操作注册reaction函数
 > >     registerReactionForOperation(runningReaction, operation)
 > >   }
 > > }
 > > 
 > > ```
 > >
+> > > registerReactionForOperation
+> > >
+> > > ```typescript
+> > > // src/store.js
+> > > export function registerReactionForOperation (reaction, { target, key, type }) {
+> > >   // 省略部分代码
+> > >   const reactionsForObj = connectionStore.get(target) // A
+> > >   let reactionsForKey = reactionsForObj.get(key) // B
+> > >   if (!reactionsForKey) { // C
+> > >     reactionsForKey = new Set()
+> > >     reactionsForObj.set(key, reactionsForKey)
+> > >   }
+> > >   if (!reactionsForKey.has(reaction)) { // D
+> > >     reactionsForKey.add(reaction)
+> > >     reaction.cleaners.push(reactionsForKey)
+> > >   }
+> > > }
+> > > 
+> > > ```
+> > >
+> > > 
+
+![img](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/c2f2ef42fde244c19d53351c2aa841ac~tplv-k3u1fbpfcp-watermark.awebp)
+
+## num++
+
+```typescript
+counter.num++
+```
+
+> 触发set
+>
+> ```typescript
+> // src/handlers.js
+> function set (target, key, value, receiver) {
+>   // 省略部分代码
+>   const hadKey = hasOwnProperty.call(target, key)
+>   const oldValue = target[key]
+>   const result = Reflect.set(target, key, value, receiver)
+>   if (!hadKey) {
+>     queueReactionsForOperation({ target, key, value, receiver, type: 'add' })
+>   } else if (value !== oldValue) {
+>     queueReactionsForOperation({
+>       target,
+>       key,
+>       value,
+>       oldValue,
+>       receiver,
+>       type: 'set'
+>     })
+>   }
+>   return result
+> }
+> 
+> ```
+>
+> > queueReactionsForOperation
+> >
+> > ```typescript
+> > // src/reactionRunner.js
+> > export function queueReactionsForOperation (operation) {
+> >   // iterate and queue every reaction, which is triggered by obj.key mutation
+> >   getReactionsForOperation(operation).forEach(queueReaction, operation)
+> > }
 > > 
+> > ```
+> >
+> > > getReactionsForOperation
+> > >
+> > > ```typescript
+> > > // src/store.js
+> > > export function getReactionsForOperation ({ target, key, type }) {
+> > >   const reactionsForTarget = connectionStore.get(target)
+> > >   const reactionsForKey = new Set()
+> > > 
+> > >   if (type === 'clear') {
+> > >     reactionsForTarget.forEach((_, key) => {
+> > >       addReactionsForKey(reactionsForKey, reactionsForTarget, key)
+> > >     })
+> > >   } else {
+> > >     addReactionsForKey(reactionsForKey, reactionsForTarget, key)
+> > >   }
+> > > 	// 省略部分代码
+> > >   return reactionsForKey
+> > > }
+> > > 
+> > > ```
+> > >
+> > > queueReaction
+> > >
+> > > ```typescript
+> > > // src/reactionRunner.js
+> > > function queueReaction (reaction) {
+> > >   debugOperation(reaction, this)
+> > >   // queue the reaction for later execution or run it immediately
+> > >   if (typeof reaction.scheduler === 'function') {
+> > >     reaction.scheduler(reaction)
+> > >   } else if (typeof reaction.scheduler === 'object') {
+> > >     reaction.scheduler.add(reaction)
+> > >   } else {
+> > >     // 没有配置scheduler，会直接到这里
+> > >     reaction()
+> > >   }
+> > > }
+> > > 
+> > > ```
+> > >
+> > > 
