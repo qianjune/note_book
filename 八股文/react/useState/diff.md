@@ -6,6 +6,7 @@
 
 1. key
 2. tag
+3. props和state
 
 
 

@@ -19,5 +19,14 @@ Foo.call(o);
 let fun = new Object();
 fun.__proto__ = TestFun.prototype;
 TestFun.call(fun)
+
+ TestFun.prototype === {
+		constructor:{
+      arguments: // 参数
+      length：// 参数数量
+      caller：// 类似函数相互调用后的链接关系
+      name：//函数名
+		}
+ }
 ```
 

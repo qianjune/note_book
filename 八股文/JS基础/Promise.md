@@ -1,4 +1,4 @@
-## Promise 
+# [Promise](https://zhuanlan.zhihu.com/p/196671665)
 
 
 
