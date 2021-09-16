@@ -1,4 +1,4 @@
-# 手写系列 - cloneDeep
+手写系列 - cloneDeep
 
 ```typescript
 const deepTag = ['[object Array]','[object Object]','[object Map]','[object Set]','[object Arguments]']
