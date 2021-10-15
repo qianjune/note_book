@@ -27,13 +27,13 @@ webpack实现的javascript parser
 
 ### babel
 
-[@babel/traverse](https://segmentfault.com/a/1190000022345699)      // AST 开发的核心，
+[@babel/traverse](https://segmentfault.com/a/1190000022345699) (/trevers/)     // AST 开发的核心，
 
 > 95% 以上的代码量都是通过 @babel/traverse 在写 visitor。
 > babel-traverse是一个对ast进行遍历的工具。类似于字符串的replace方法，指定一个正则表达式，就能对字符串进行替换。只不过babel-traverse是对ast进行替换。
 
 ```
-@babel/parser        // 将源代码转为 AST
+@babel/parser(/pa:ser/)       // 将源代码转为 AST
 @babel/generator     // 将操作过的 AST 生成对应源代码
 @babel/types         // 用于创建 ast 节点，判断 ast 节点，在实际的开发中会经常用到
 @babel/template      // 可以创建 ast 节点，但过于繁琐，通过 @babel/template 则可以快速创建整段的 ast 节点
