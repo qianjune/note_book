@@ -6,8 +6,8 @@
 
 1. float（非none）
 2. overflow（非visible）
-3. display
-4. position
+3. display: inline-block、table-cells、flex
+4. position: absolute、fixed
 5. 根元素
 
 
